@@ -1,13 +1,7 @@
 #!/bin/sh
 
-cd p
+cd patches
 
 ./apply/install-common.sh
 
-cd ..
-
-cd external/chromium_org/
-git am *.diff
-
-cd ..
 cd ..
