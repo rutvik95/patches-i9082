@@ -1,4 +1,4 @@
-From d69916ad81b45e190bf75d7e80a7c328fff2c2bb Mon Sep 17 00:00:00 2001
+From 45c5352b9ea8f6dc8c47e358fba52b025a6f9f7a Mon Sep 17 00:00:00 2001
 From: Pawit Pornkitprasan <p.pawit@gmail.com>
 Date: Sun, 16 Nov 2014 14:35:10 +0700
 Subject: [PATCH] i9082: WIP: lollipop
@@ -9,10 +9,9 @@ Change-Id: I4897e6d948e546d48defc99d57dff3d27aa5a704
  cm.mk                                              |  3 --
  init.capri_ss_baffin.rc                            |  1 +
  .../frameworks/base/core/res/res/values/arrays.xml |  8 ++---
- .../frameworks/base/core/res/res/values/config.xml |  8 ++---
+ .../frameworks/base/core/res/res/values/config.xml |  7 ++---
  .../apps/Camera2/res/values/qcomarrays.xml         | 35 ----------------------
- .../apps/SamsungServiceMode/res/values/config.xml  | 18 -----------
- .../packages/apps/Settings/res/values/config.xml   | 23 --------------
+ .../packages/apps/Settings/res/values/config.xml   |  6 ++--
  overlay/packages/apps/Torch/res/values/config.xml  | 24 ---------------
  sepolicy/device.te                                 |  1 +
  sepolicy/file_contexts                             | 24 +++++++++++++--
@@ -21,10 +20,8 @@ Change-Id: I4897e6d948e546d48defc99d57dff3d27aa5a704
  sepolicy/property_contexts                         |  1 +
  sepolicy/rild.te                                   |  9 ++++++
  sepolicy/system_server.te                          |  2 ++
- 16 files changed, 62 insertions(+), 114 deletions(-)
+ 15 files changed, 63 insertions(+), 77 deletions(-)
  delete mode 100644 overlay/packages/apps/Camera2/res/values/qcomarrays.xml
- delete mode 100644 overlay/packages/apps/SamsungServiceMode/res/values/config.xml
- delete mode 100644 overlay/packages/apps/Settings/res/values/config.xml
  delete mode 100644 overlay/packages/apps/Torch/res/values/config.xml
  create mode 100644 sepolicy/device.te
  create mode 100644 sepolicy/init.te
@@ -34,10 +31,10 @@ Change-Id: I4897e6d948e546d48defc99d57dff3d27aa5a704
  create mode 100644 sepolicy/system_server.te
 
 diff --git a/BoardConfig.mk b/BoardConfig.mk
-index d2d57f9..d1221f8 100644
+index ff49784..8feab91 100644
 --- a/BoardConfig.mk
 +++ b/BoardConfig.mk
-@@ -112,3 +112,9 @@ BOARD_SEPOLICY_DIRS += \
+@@ -115,3 +115,9 @@ BOARD_SEPOLICY_DIRS += \
  
  BOARD_SEPOLICY_UNION += \
      file_contexts \
@@ -98,10 +95,10 @@ index e13493a..93d8a38 100644
  
  </resources>
 diff --git a/overlay/frameworks/base/core/res/res/values/config.xml b/overlay/frameworks/base/core/res/res/values/config.xml
-index 50d9214..163944a 100644
+index 50d9214..37124c5 100644
 --- a/overlay/frameworks/base/core/res/res/values/config.xml
 +++ b/overlay/frameworks/base/core/res/res/values/config.xml
-@@ -191,13 +191,13 @@
+@@ -191,13 +191,10 @@
  
      <!-- Timeout in MS for how long you have to long-press the back key to
           kill the foreground app. -->
@@ -110,23 +107,13 @@ index 50d9214..163944a 100644
  
      <!-- Boolean to enable stk functionality on Samsung phones -->
 -    <bool name="config_samsung_stk">true</bool>
-+    <!-- <bool name="config_samsung_stk">true</bool> -->
- 
-     <!-- Device supports LED flashlight -->
+-
+-    <!-- Device supports LED flashlight -->
 -    <bool name="config_enableTorch">true</bool>
-+    <!-- <bool name="config_enableTorch">true</bool> -->
++    <!-- <bool name="config_samsung_stk">true</bool> -->
  
      <!-- Hardware 'face' keys present on the device, stored as a bit field.
           This integer should equal the sum of the corresponding value for each
-@@ -209,7 +209,7 @@
-             16 - App switch
-          For example, a device with Home, Back and Menu keys would set this
-          config to 7. -->
--    <integer name="config_deviceHardwareKeys">7</integer>
-+    <!-- <integer name="config_deviceHardwareKeys">7</integer> -->
- 
-     <!-- Disable lockscreen translucent decor by default -->
-     <bool name="config_enableLockScreenTranslucentDecor">true</bool>
 diff --git a/overlay/packages/apps/Camera2/res/values/qcomarrays.xml b/overlay/packages/apps/Camera2/res/values/qcomarrays.xml
 deleted file mode 100644
 index 2f28a27..0000000
@@ -169,59 +156,21 @@ index 2f28a27..0000000
 -     </string-array>
 -</resources>
 \ No newline at end of file
-diff --git a/overlay/packages/apps/SamsungServiceMode/res/values/config.xml b/overlay/packages/apps/SamsungServiceMode/res/values/config.xml
-deleted file mode 100644
-index 437a0c1..0000000
---- a/overlay/packages/apps/SamsungServiceMode/res/values/config.xml
-+++ /dev/null
-@@ -1,18 +0,0 @@
--<?xml version="1.0" encoding="utf-8"?>
--<!-- Copyright (C) 2014 The CyanogenMod Project
--
--     Licensed under the Apache License, Version 2.0 (the "License");
--     you may not use this file except in compliance with the License.
--     You may obtain a copy of the License at
--
--          http://www.apache.org/licenses/LICENSE-2.0
--
--     Unless required by applicable law or agreed to in writing, software
--     distributed under the License is distributed on an "AS IS" BASIS,
--     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
--     See the License for the specific language governing permissions and
--     limitations under the License.
---->
--<resources>
--    <integer name="config_api_version">2</integer>
--</resources>
 diff --git a/overlay/packages/apps/Settings/res/values/config.xml b/overlay/packages/apps/Settings/res/values/config.xml
-deleted file mode 100644
-index 96f80ab..0000000
+index 96f80ab..b9fa984 100644
 --- a/overlay/packages/apps/Settings/res/values/config.xml
-+++ /dev/null
-@@ -1,23 +0,0 @@
--<?xml version="1.0" encoding="utf-8"?>
--<!--
--     Copyright (C) 2012 The CyanogenMod Project
--
--     Licensed under the Apache License, Version 2.0 (the "License");
--     you may not use this file except in compliance with the License.
--     You may obtain a copy of the License at
--
--           http://www.apache.org/licenses/LICENSE-2.0
--
--     Unless required by applicable law or agreed to in writing, software
--     distributed under the License is distributed on an "AS IS" BASIS,
--     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
--     See the License for the specific language governing permissions and
--     limitations under the License.
---->
--
--<resources xmlns:xliff="urnasis:names:tc:xliff:document:1.2 ">
--    <!-- Show Expanded Desktop preference -->
++++ b/overlay/packages/apps/Settings/res/values/config.xml
+@@ -17,7 +17,7 @@
+ 
+ <resources xmlns:xliff="urnasis:names:tc:xliff:document:1.2 ">
+     <!-- Show Expanded Desktop preference -->
 -    <bool name="config_show_expandedDesktop">true</bool>
 -    <bool name="has_led_flash">true</bool>
 -    <bool name="config_show_volumeRockerWake">true</bool>
--</resources>
++    <!-- <bool name="config_show_expandedDesktop">true</bool> -->
++    <!-- <bool name="has_led_flash">true</bool> -->
++    <!-- <bool name="config_show_volumeRockerWake">true</bool> -->
+ </resources>
 \ No newline at end of file
 diff --git a/overlay/packages/apps/Torch/res/values/config.xml b/overlay/packages/apps/Torch/res/values/config.xml
 deleted file mode 100644

@@ -1,4 +1,4 @@
-From 688a7a4540ae85edfc157104f7da6b65e20975a9 Mon Sep 17 00:00:00 2001
+From daf064668bd769df7983256390d4c1c3796bc175 Mon Sep 17 00:00:00 2001
 From: Pawit Pornkitprasan <p.pawit@gmail.com>
 Date: Thu, 14 Nov 2013 15:19:46 +0700
 Subject: [PATCH 1/5] binder: add compat symbol
@@ -29,7 +29,7 @@ index dd04dcf..9ec2380 100644
 1.9.3 (Apple Git-50)
 
 
-From 97d8ff7a1e21abe06ae6bb864282451e579ea0af Mon Sep 17 00:00:00 2001
+From 353317db40e2529ca53182d1fa27a199243e7701 Mon Sep 17 00:00:00 2001
 From: Pawit Pornkitprasan <p.pawit@gmail.com>
 Date: Tue, 10 Dec 2013 19:38:17 +0700
 Subject: [PATCH 2/5] binder: add compat symbols
@@ -75,7 +75,7 @@ index 1dbb06f..8b36a54 100644
 1.9.3 (Apple Git-50)
 
 
-From b148242dd37d48f57acffd3da6cde44e3ad0afb1 Mon Sep 17 00:00:00 2001
+From 569300eb675c94c6fe57b5cf49b870dea60bd2fe Mon Sep 17 00:00:00 2001
 From: Pawit Pornkitprasan <p.pawit@gmail.com>
 Date: Tue, 18 Nov 2014 08:38:33 +0700
 Subject: [PATCH 3/5] Bring back support for glReadPixels screenshot path
@@ -411,7 +411,7 @@ index b22f194..83f0912 100644
          int getStatus() const;
      };
 diff --git a/services/surfaceflinger/SurfaceFlinger.cpp b/services/surfaceflinger/SurfaceFlinger.cpp
-index 5e58899..0fab6cc 100644
+index eb09ea1..0857e76 100644
 --- a/services/surfaceflinger/SurfaceFlinger.cpp
 +++ b/services/surfaceflinger/SurfaceFlinger.cpp
 @@ -3377,7 +3377,8 @@ status_t SurfaceFlinger::captureScreen(const sp<IBinder>& display,
@@ -531,7 +531,7 @@ index 7faeb67..e7f32df 100644
 1.9.3 (Apple Git-50)
 
 
-From 6828dc649da03e59519366eb31beb4ce3528bf61 Mon Sep 17 00:00:00 2001
+From 2dd6b2856b680e64d95366610fd9b2fb27376434 Mon Sep 17 00:00:00 2001
 From: Ricardo Cerqueira <cyanogenmod@cerqueira.org>
 Date: Tue, 6 Aug 2013 16:11:06 +0100
 Subject: [PATCH 4/5] libgui: Bring back support for mHeap-based screenshots
@@ -780,7 +780,7 @@ index 490b58e..40b5e56 100644
  ifneq ($(VSYNC_EVENT_PHASE_OFFSET_NS),)
      LOCAL_CFLAGS += -DVSYNC_EVENT_PHASE_OFFSET_NS=$(VSYNC_EVENT_PHASE_OFFSET_NS)
 diff --git a/services/surfaceflinger/SurfaceFlinger.cpp b/services/surfaceflinger/SurfaceFlinger.cpp
-index 0fab6cc..aab1f5e 100644
+index 0857e76..714a9f6 100644
 --- a/services/surfaceflinger/SurfaceFlinger.cpp
 +++ b/services/surfaceflinger/SurfaceFlinger.cpp
 @@ -25,6 +25,9 @@
@@ -1025,7 +1025,7 @@ index e7f32df..d7bc9f6 100644
 1.9.3 (Apple Git-50)
 
 
-From 3dd5d530e11b1fe9d0452a635f733afd9782c47e Mon Sep 17 00:00:00 2001
+From 6198bfb82d15823127e97e7a687336fa465a61b8 Mon Sep 17 00:00:00 2001
 From: Pawit Pornkitprasan <p.pawit@gmail.com>
 Date: Mon, 16 Dec 2013 15:45:42 +0700
 Subject: [PATCH 5/5] sf: CAPRI_HWC: fix rotation artifact
@@ -1035,7 +1035,7 @@ Subject: [PATCH 5/5] sf: CAPRI_HWC: fix rotation artifact
  1 file changed, 5 insertions(+)
 
 diff --git a/services/surfaceflinger/SurfaceFlinger.cpp b/services/surfaceflinger/SurfaceFlinger.cpp
-index aab1f5e..0683687 100644
+index 714a9f6..0dca00b 100644
 --- a/services/surfaceflinger/SurfaceFlinger.cpp
 +++ b/services/surfaceflinger/SurfaceFlinger.cpp
 @@ -3602,6 +3602,11 @@ status_t SurfaceFlinger::captureScreenImplLocked(

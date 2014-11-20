@@ -1,7 +1,7 @@
-From da3e6228b62e9ba2171cc519b2593b545d86e2c1 Mon Sep 17 00:00:00 2001
+From 656e4bfb1b9301458b8385d5392225305d471a18 Mon Sep 17 00:00:00 2001
 From: Pawit Pornkitprasan <p.pawit@gmail.com>
 Date: Sat, 15 Nov 2014 14:47:35 +0700
-Subject: [PATCH 1/3] frameworks: base: add KEYCODE_HOME to wake keys
+Subject: [PATCH 1/4] frameworks: base: add KEYCODE_HOME to wake keys
 
 Change-Id: I77d70df2263dd9c75b02efde18d91585b1ad29f9
 ---
@@ -24,10 +24,10 @@ index 0701b53..f7939a9 100644
 1.9.3 (Apple Git-50)
 
 
-From ff177bbfc8c127180e777831ec2b9d818463d816 Mon Sep 17 00:00:00 2001
+From a07ba2d7a960aa26108ba06c1ab7b490055c73ce Mon Sep 17 00:00:00 2001
 From: Pawit Pornkitprasan <p.pawit@gmail.com>
 Date: Sat, 15 Nov 2014 14:50:29 +0700
-Subject: [PATCH 2/3] TelephonyManager: set properties in Broadcom-style as
+Subject: [PATCH 2/4] TelephonyManager: set properties in Broadcom-style as
  expected by RIL
 
 For i9082
@@ -143,10 +143,10 @@ index 12b65f1..32508ff 100644
 1.9.3 (Apple Git-50)
 
 
-From f04e99f8219703466c790b3b7ff9037b5ad62656 Mon Sep 17 00:00:00 2001
+From 2bd3af11df36cea109d14fde5b0a2b2ed3ffe9c2 Mon Sep 17 00:00:00 2001
 From: Pawit Pornkitprasan <p.pawit@gmail.com>
 Date: Sat, 15 Nov 2014 22:33:16 +0700
-Subject: [PATCH 3/3] Camera: HACK: i9082: default to a supporting antibanding
+Subject: [PATCH 3/4] Camera: HACK: i9082: default to a supporting antibanding
  mode
 
 The default value doesn't get checked later and will crash the camera HAL
@@ -169,6 +169,46 @@ index 03540e1..9f47b9c 100644
  
          // control.aeExposureCompensation
          m.set(CaptureRequest.CONTROL_AE_EXPOSURE_COMPENSATION, 0);
+-- 
+1.9.3 (Apple Git-50)
+
+
+From 9aded071f544bb8ac89b77ecb1feb89d077141f2 Mon Sep 17 00:00:00 2001
+From: Pawit Pornkitprasan <p.pawit@gmail.com>
+Date: Thu, 20 Nov 2014 11:26:26 +0000
+Subject: [PATCH 4/4] Revert "SystemUI: Fix mobile data connection type hiding"
+
+This reverts commit b2aac59c634158f0e3d78f41d36b89c5ab3bbfe2.
+
+This is intentional and is only displayed when 2 connections
+are connected at the same time.
+
+E.g.  If you're connected to Wi-Fi with a captive portal, then
+3G will remain connected and normal data connectivity will go
+through 3G until you have logged in via Wi-Fi.
+
+In that case, the correct display is Wi-Fi with "!" and mobile
+with "3G".
+
+Change-Id: I985c361a656d15b145e467542508dcef41f92df5
+---
+ .../SystemUI/src/com/android/systemui/statusbar/SignalClusterView.java | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
+
+diff --git a/packages/SystemUI/src/com/android/systemui/statusbar/SignalClusterView.java b/packages/SystemUI/src/com/android/systemui/statusbar/SignalClusterView.java
+index da17ddc..6a8f7aa 100644
+--- a/packages/SystemUI/src/com/android/systemui/statusbar/SignalClusterView.java
++++ b/packages/SystemUI/src/com/android/systemui/statusbar/SignalClusterView.java
+@@ -402,8 +402,7 @@ public class SignalClusterView
+ 
+         if (mStyle == STATUS_BAR_STYLE_ANDROID_DEFAULT) {
+             mMobileType.setVisibility(
+-                    ((mRoaming || mMobileTypeId != 0) && !mWifiVisible) ?
+-                    View.VISIBLE : View.GONE);
++                    (mRoaming || mMobileTypeId != 0) ? View.VISIBLE : View.GONE);
+         } else {
+             mMobileType.setVisibility(View.GONE);
+         }
 -- 
 1.9.3 (Apple Git-50)
 
