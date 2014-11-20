@@ -1,0 +1,349 @@
+From d69916ad81b45e190bf75d7e80a7c328fff2c2bb Mon Sep 17 00:00:00 2001
+From: Pawit Pornkitprasan <p.pawit@gmail.com>
+Date: Sun, 16 Nov 2014 14:35:10 +0700
+Subject: [PATCH] i9082: WIP: lollipop
+
+Change-Id: I4897e6d948e546d48defc99d57dff3d27aa5a704
+---
+ BoardConfig.mk                                     |  6 ++++
+ cm.mk                                              |  3 --
+ init.capri_ss_baffin.rc                            |  1 +
+ .../frameworks/base/core/res/res/values/arrays.xml |  8 ++---
+ .../frameworks/base/core/res/res/values/config.xml |  8 ++---
+ .../apps/Camera2/res/values/qcomarrays.xml         | 35 ----------------------
+ .../apps/SamsungServiceMode/res/values/config.xml  | 18 -----------
+ .../packages/apps/Settings/res/values/config.xml   | 23 --------------
+ overlay/packages/apps/Torch/res/values/config.xml  | 24 ---------------
+ sepolicy/device.te                                 |  1 +
+ sepolicy/file_contexts                             | 24 +++++++++++++--
+ sepolicy/init.te                                   |  7 +++++
+ sepolicy/kernel.te                                 |  6 ++++
+ sepolicy/property_contexts                         |  1 +
+ sepolicy/rild.te                                   |  9 ++++++
+ sepolicy/system_server.te                          |  2 ++
+ 16 files changed, 62 insertions(+), 114 deletions(-)
+ delete mode 100644 overlay/packages/apps/Camera2/res/values/qcomarrays.xml
+ delete mode 100644 overlay/packages/apps/SamsungServiceMode/res/values/config.xml
+ delete mode 100644 overlay/packages/apps/Settings/res/values/config.xml
+ delete mode 100644 overlay/packages/apps/Torch/res/values/config.xml
+ create mode 100644 sepolicy/device.te
+ create mode 100644 sepolicy/init.te
+ create mode 100644 sepolicy/kernel.te
+ create mode 100644 sepolicy/property_contexts
+ create mode 100644 sepolicy/rild.te
+ create mode 100644 sepolicy/system_server.te
+
+diff --git a/BoardConfig.mk b/BoardConfig.mk
+index d2d57f9..d1221f8 100644
+--- a/BoardConfig.mk
++++ b/BoardConfig.mk
+@@ -112,3 +112,9 @@ BOARD_SEPOLICY_DIRS += \
+ 
+ BOARD_SEPOLICY_UNION += \
+     file_contexts \
++    property_contexts \
++    device.te \
++    init.te \
++    kernel.te \
++    rild.te \
++    system_server.te \
+diff --git a/cm.mk b/cm.mk
+index 13fd13a..802833e 100644
+--- a/cm.mk
++++ b/cm.mk
+@@ -1,6 +1,3 @@
+-## Specify phone tech before including full_phone
+-$(call inherit-product, vendor/cm/config/gsm.mk)
+-
+ # Release name
+ PRODUCT_RELEASE_NAME := GalaxyGrandDuos
+ 
+diff --git a/init.capri_ss_baffin.rc b/init.capri_ss_baffin.rc
+index f1440fb..3b17e2e 100755
+--- a/init.capri_ss_baffin.rc
++++ b/init.capri_ss_baffin.rc
+@@ -444,6 +444,7 @@ on fs
+     chown system radio /sys/class/sec/switch/adc
+ 
+ on post-fs
++    restorecon_recursive /efs
+     chown radio system /efs
+     chmod 0771 /efs
+ 
+diff --git a/overlay/frameworks/base/core/res/res/values/arrays.xml b/overlay/frameworks/base/core/res/res/values/arrays.xml
+index e13493a..93d8a38 100644
+--- a/overlay/frameworks/base/core/res/res/values/arrays.xml
++++ b/overlay/frameworks/base/core/res/res/values/arrays.xml
+@@ -20,18 +20,18 @@
+ <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+ 
+     <!-- Defines the shutdown options shown in the reboot dialog. -->
+-    <array name="shutdown_reboot_options" translatable="false">
++    <!-- <array name="shutdown_reboot_options" translatable="false">
+         <item>@string/reboot_reboot</item>
+         <item>@string/reboot_soft</item>
+         <item>@string/reboot_recovery</item>
+-    </array>
++    </array> -->
+ 
+     <!-- Do not translate. Defines the shutdown actions passed to the kernel.
+          The first item should be empty for regular reboot. -->
+-    <string-array name="shutdown_reboot_actions" translatable="false">
++    <!-- <string-array name="shutdown_reboot_actions" translatable="false">
+         <item></item>
+         <item>soft_reboot</item>
+         <item>recovery</item>
+-    </string-array>
++    </string-array> -->
+ 
+ </resources>
+diff --git a/overlay/frameworks/base/core/res/res/values/config.xml b/overlay/frameworks/base/core/res/res/values/config.xml
+index 50d9214..163944a 100644
+--- a/overlay/frameworks/base/core/res/res/values/config.xml
++++ b/overlay/frameworks/base/core/res/res/values/config.xml
+@@ -191,13 +191,13 @@
+ 
+     <!-- Timeout in MS for how long you have to long-press the back key to
+          kill the foreground app. -->
+-    <integer name="config_backKillTimeout">1500</integer>
++    <!-- <integer name="config_backKillTimeout">1500</integer> -->
+ 
+     <!-- Boolean to enable stk functionality on Samsung phones -->
+-    <bool name="config_samsung_stk">true</bool>
++    <!-- <bool name="config_samsung_stk">true</bool> -->
+ 
+     <!-- Device supports LED flashlight -->
+-    <bool name="config_enableTorch">true</bool>
++    <!-- <bool name="config_enableTorch">true</bool> -->
+ 
+     <!-- Hardware 'face' keys present on the device, stored as a bit field.
+          This integer should equal the sum of the corresponding value for each
+@@ -209,7 +209,7 @@
+             16 - App switch
+          For example, a device with Home, Back and Menu keys would set this
+          config to 7. -->
+-    <integer name="config_deviceHardwareKeys">7</integer>
++    <!-- <integer name="config_deviceHardwareKeys">7</integer> -->
+ 
+     <!-- Disable lockscreen translucent decor by default -->
+     <bool name="config_enableLockScreenTranslucentDecor">true</bool>
+diff --git a/overlay/packages/apps/Camera2/res/values/qcomarrays.xml b/overlay/packages/apps/Camera2/res/values/qcomarrays.xml
+deleted file mode 100644
+index 2f28a27..0000000
+--- a/overlay/packages/apps/Camera2/res/values/qcomarrays.xml
++++ /dev/null
+@@ -1,35 +0,0 @@
+-<?xml version="1.0" encoding="utf-8"?>
+-<!--
+-     Copyright (C) 2013 The CyanogenMod Project
+-
+-     Licensed under the Apache License, Version 2.0 (the "License");
+-     you may not use this file except in compliance with the License.
+-     You may obtain a copy of the License at
+-
+-           http://www.apache.org/licenses/LICENSE-2.0
+-
+-     Unless required by applicable law or agreed to in writing, software
+-     distributed under the License is distributed on an "AS IS" BASIS,
+-     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+-     See the License for the specific language governing permissions and
+-     limitations under the License.
+--->
+-
+-<resources xmlns:xliff="urnasis:names:tc:xliff:document:1.2 ">
+-    <!-- I9082L-specific ISO entries -->
+-    <string-array name="pref_camera_iso_entries">
+-         <item>@string/pref_camera_iso_entry_auto</item>
+-         <item>@string/pref_camera_iso_entry_iso100</item>
+-         <item>@string/pref_camera_iso_entry_iso200</item>
+-         <item>@string/pref_camera_iso_entry_iso400</item>
+-         <item>@string/pref_camera_iso_entry_iso800</item>
+-    </string-array>
+-
+-    <string-array name="pref_camera_iso_entryvalues">
+-         <item>auto</item>
+-         <item>100</item>
+-         <item>200</item>
+-         <item>400</item>
+-         <item>800</item>
+-     </string-array>
+-</resources>
+\ No newline at end of file
+diff --git a/overlay/packages/apps/SamsungServiceMode/res/values/config.xml b/overlay/packages/apps/SamsungServiceMode/res/values/config.xml
+deleted file mode 100644
+index 437a0c1..0000000
+--- a/overlay/packages/apps/SamsungServiceMode/res/values/config.xml
++++ /dev/null
+@@ -1,18 +0,0 @@
+-<?xml version="1.0" encoding="utf-8"?>
+-<!-- Copyright (C) 2014 The CyanogenMod Project
+-
+-     Licensed under the Apache License, Version 2.0 (the "License");
+-     you may not use this file except in compliance with the License.
+-     You may obtain a copy of the License at
+-
+-          http://www.apache.org/licenses/LICENSE-2.0
+-
+-     Unless required by applicable law or agreed to in writing, software
+-     distributed under the License is distributed on an "AS IS" BASIS,
+-     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+-     See the License for the specific language governing permissions and
+-     limitations under the License.
+--->
+-<resources>
+-    <integer name="config_api_version">2</integer>
+-</resources>
+diff --git a/overlay/packages/apps/Settings/res/values/config.xml b/overlay/packages/apps/Settings/res/values/config.xml
+deleted file mode 100644
+index 96f80ab..0000000
+--- a/overlay/packages/apps/Settings/res/values/config.xml
++++ /dev/null
+@@ -1,23 +0,0 @@
+-<?xml version="1.0" encoding="utf-8"?>
+-<!--
+-     Copyright (C) 2012 The CyanogenMod Project
+-
+-     Licensed under the Apache License, Version 2.0 (the "License");
+-     you may not use this file except in compliance with the License.
+-     You may obtain a copy of the License at
+-
+-           http://www.apache.org/licenses/LICENSE-2.0
+-
+-     Unless required by applicable law or agreed to in writing, software
+-     distributed under the License is distributed on an "AS IS" BASIS,
+-     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+-     See the License for the specific language governing permissions and
+-     limitations under the License.
+--->
+-
+-<resources xmlns:xliff="urnasis:names:tc:xliff:document:1.2 ">
+-    <!-- Show Expanded Desktop preference -->
+-    <bool name="config_show_expandedDesktop">true</bool>
+-    <bool name="has_led_flash">true</bool>
+-    <bool name="config_show_volumeRockerWake">true</bool>
+-</resources>
+\ No newline at end of file
+diff --git a/overlay/packages/apps/Torch/res/values/config.xml b/overlay/packages/apps/Torch/res/values/config.xml
+deleted file mode 100644
+index 219163c..0000000
+--- a/overlay/packages/apps/Torch/res/values/config.xml
++++ /dev/null
+@@ -1,24 +0,0 @@
+-<?xml version="1.0" encoding="utf-8"?>
+-<!--
+-/*
+-** Copyright 2011, The CyanogenMod Project
+-**
+-** Licensed under the Apache License, Version 2.0 (the "License"); 
+-** you may not use this file except in compliance with the License. 
+-** You may obtain a copy of the License at 
+-**
+-**     http://www.apache.org/licenses/LICENSE-2.0 
+-**
+-** Unless required by applicable law or agreed to in writing, software 
+-** distributed under the License is distributed on an "AS IS" BASIS, 
+-** WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
+-** See the License for the specific language governing permissions and 
+-** limitations under the License.
+-*/
+--->
+-
+-<!-- These resources are around just to allow their values to be customized
+-     for different hardware and product builds. -->
+-<resources>
+-    <bool name="useCameraInterface">true</bool>
+-</resources>
+diff --git a/sepolicy/device.te b/sepolicy/device.te
+new file mode 100644
+index 0000000..c185d01
+--- /dev/null
++++ b/sepolicy/device.te
+@@ -0,0 +1 @@
++type cam_block_device, dev_type;
+diff --git a/sepolicy/file_contexts b/sepolicy/file_contexts
+index 9628eab..9ea68b3 100644
+--- a/sepolicy/file_contexts
++++ b/sepolicy/file_contexts
+@@ -1,3 +1,21 @@
+-# Graphics
+-/dev/vchiq                                          u:object_r:powervr_device:s0
+-/dev/vc-lmk                                         u:object_r:powervr_device:s0
++/dev/vchiq                                          u:object_r:gpu_device:s0
++/dev/vc-lmk                                         u:object_r:gpu_device:s0
++/dev/vcsm                                           u:object_r:gpu_device:s0
++/dev/vc-dnfo                                        u:object_r:gpu_device:s0
++/dev/vc-omx                                         u:object_r:video_device:s0
++/dev/vc-cma                                         u:object_r:video_device:s0
++
++/dev/bcm_irpc                                       u:object_r:radio_device:s0
++/dev/mpu6k                                          u:object_r:sensors_device:s0
++/dev/proximity                                      u:object_r:sensors_device:s0
++
++/efs/bluetooth/bt_addr                              u:object_r:bluetooth_efs_file:s0
++/sys/devices/platform/bcmbt-rfkill.1/rfkill/rfkill0/state -- u:object_r:sysfs_bluetooth_writable:s0
++/sys/devices/platform/bcmbt-rfkill.1/rfkill/rfkill0/type -- u:object_r:sysfs_bluetooth_writable:s0
++
++/dev/ttyS2                                          u:object_r:hci_attach_dev:s0
++
++/dev/bcm_log                                        u:object_r:radio_device:s0
++/dev/block/mmcblk0p1                                u:object_r:radio_device:s0
++
++/dev/block/mmcblk0p15                               u:object_r:cam_block_device:s0
+diff --git a/sepolicy/init.te b/sepolicy/init.te
+new file mode 100644
+index 0000000..45989e3
+--- /dev/null
++++ b/sepolicy/init.te
+@@ -0,0 +1,7 @@
++# chmod in init.capri_ss_baffin.rc (for bkmgrd)
++allow init block_device:blk_file setattr;
++allow init kmem_device:chr_file setattr; # TODO: want read and open too, but conflicts with neverallow
++allow init radio_device:blk_file setattr;
++
++# insmod
++allow init self:capability sys_module; # TODO: want sys_ptrace too
+diff --git a/sepolicy/kernel.te b/sepolicy/kernel.te
+new file mode 100644
+index 0000000..97173fe
+--- /dev/null
++++ b/sepolicy/kernel.te
+@@ -0,0 +1,6 @@
++# Create mmcblk1
++allow kernel device:blk_file { create setattr };
++allow kernel self:capability mknod;
++
++# kcamfwcheck drivers/char/broadcom/vc_cam/vc_cam.c
++allow kernel cam_block_device:blk_file rw_file_perms;
+diff --git a/sepolicy/property_contexts b/sepolicy/property_contexts
+new file mode 100644
+index 0000000..c74a4bb
+--- /dev/null
++++ b/sepolicy/property_contexts
+@@ -0,0 +1 @@
++service.brcm.bt.mac     u:object_r:radio_prop:s0
+diff --git a/sepolicy/rild.te b/sepolicy/rild.te
+new file mode 100644
+index 0000000..c92f260
+--- /dev/null
++++ b/sepolicy/rild.te
+@@ -0,0 +1,9 @@
++allow rild self:capability dac_override;
++
++allow rild gps_data_file:fifo_file { write read open setattr };
++allow rild self:packet_socket { create ioctl };
++allow rild system_data_file:sock_file { create setattr unlink };
++allow rild system_data_file:dir rw_dir_perms;
++
++# /proc/bcm_fuse_net_config
++allow rild proc:file write;
+diff --git a/sepolicy/system_server.te b/sepolicy/system_server.te
+new file mode 100644
+index 0000000..7782f3d
+--- /dev/null
++++ b/sepolicy/system_server.te
+@@ -0,0 +1,2 @@
++# Access /efs/wifi/.mac.info
++allow system_server efs_file:file { read open };
+-- 
+1.9.3 (Apple Git-50)
+
