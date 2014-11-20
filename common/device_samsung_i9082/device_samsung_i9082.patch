@@ -6,7 +6,6 @@ Subject: [PATCH] i9082: WIP: lollipop
 Change-Id: I4897e6d948e546d48defc99d57dff3d27aa5a704
 ---
  BoardConfig.mk                                     |  6 ++++
- cm.mk                                              |  3 --
  init.capri_ss_baffin.rc                            |  1 +
  .../frameworks/base/core/res/res/values/arrays.xml |  8 ++---
  .../frameworks/base/core/res/res/values/config.xml |  7 ++---
@@ -44,17 +43,7 @@ index ff49784..8feab91 100644
 +    kernel.te \
 +    rild.te \
 +    system_server.te \
-diff --git a/cm.mk b/cm.mk
-index 13fd13a..802833e 100644
---- a/cm.mk
-+++ b/cm.mk
-@@ -1,6 +1,3 @@
--## Specify phone tech before including full_phone
--$(call inherit-product, vendor/cm/config/gsm.mk)
--
- # Release name
- PRODUCT_RELEASE_NAME := GalaxyGrandDuos
- 
+
 diff --git a/init.capri_ss_baffin.rc b/init.capri_ss_baffin.rc
 index f1440fb..3b17e2e 100755
 --- a/init.capri_ss_baffin.rc
