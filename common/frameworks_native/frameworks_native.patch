@@ -22,7 +22,7 @@ index dd04dcf..9ec2380 100644
 +    return state->getCallingPid();
 +}
 +
- int IPCThreadState::getCallingPid() const
+ pid_t IPCThreadState::getCallingPid() const
  {
      return mCallingPid;
 -- 
