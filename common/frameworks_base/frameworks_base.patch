@@ -1,7 +1,7 @@
-From 05c47b576e364201876b9f627a191fe4f06c8125 Mon Sep 17 00:00:00 2001
+From 44f15f4e09edb790c40aed5225f57fef7a92c344 Mon Sep 17 00:00:00 2001
 From: Pawit Pornkitprasan <p.pawit@gmail.com>
 Date: Sat, 15 Nov 2014 14:50:29 +0700
-Subject: [PATCH 2/6] TelephonyManager: set properties in Broadcom-style as
+Subject: [PATCH 1/3] TelephonyManager: set properties in Broadcom-style as
  expected by RIL
 
 For i9082
@@ -12,7 +12,7 @@ Change-Id: I475fdd164b3316720387fefb14a3e12fbc262b39
  1 file changed, 20 insertions(+), 49 deletions(-)
 
 diff --git a/telephony/java/android/telephony/TelephonyManager.java b/telephony/java/android/telephony/TelephonyManager.java
-index abf8402..5ae8ab5 100644
+index b7b278f..62cfa05 100644
 --- a/telephony/java/android/telephony/TelephonyManager.java
 +++ b/telephony/java/android/telephony/TelephonyManager.java
 @@ -2729,44 +2729,16 @@ public class TelephonyManager {
@@ -117,10 +117,10 @@ index abf8402..5ae8ab5 100644
 1.9.3 (Apple Git-50)
 
 
-From 0d1259e261a8b6faa02c640398162ddff4bd26f3 Mon Sep 17 00:00:00 2001
+From a8122619415a66faa1cfe9e144faeecdc2ca8e78 Mon Sep 17 00:00:00 2001
 From: Pawit Pornkitprasan <p.pawit@gmail.com>
 Date: Sat, 15 Nov 2014 22:33:16 +0700
-Subject: [PATCH 3/6] Camera: HACK: i9082: API hacks
+Subject: [PATCH 2/3] Camera: HACK: i9082: API hacks
 
 CTS 5.0 requires the presence of an auto mode, so applications
 may try to use auto without checking.
@@ -175,3 +175,54 @@ index d461bca..a34a758 100644
              case INVALID_OPERATION:
 -- 
 1.9.3 (Apple Git-50)
+
+
+From caa1769f550d062de48e8b7866f90492c01a5908 Mon Sep 17 00:00:00 2001
+From: Pawit Pornkitprasan <p.pawit@gmail.com>
+Date: Sun, 21 Dec 2014 16:23:31 +0700
+Subject: [PATCH 3/3] PowerManagerService: only turn on button light when any
+ button is pressed
+
+This more closely emulates stock Samsung behavior
+
+Change-Id: I6b15c45b713bcbc290a1026805c46109060f9990
+---
+ .../core/java/com/android/server/power/PowerManagerService.java   | 8 +++++++-
+ 1 file changed, 7 insertions(+), 1 deletion(-)
+
+diff --git a/services/core/java/com/android/server/power/PowerManagerService.java b/services/core/java/com/android/server/power/PowerManagerService.java
+index 9ce2725..b2bc461 100644
+--- a/services/core/java/com/android/server/power/PowerManagerService.java
++++ b/services/core/java/com/android/server/power/PowerManagerService.java
+@@ -240,6 +240,7 @@ public final class PowerManagerService extends SystemService
+     // Timestamp of the last call to user activity.
+     private long mLastUserActivityTime;
+     private long mLastUserActivityTimeNoChangeLights;
++    private long mLastButtonActivityTime;
+ 
+     // Timestamp of last interactive power hint.
+     private long mLastInteractivePowerHintTime;
+@@ -1134,6 +1135,11 @@ public final class PowerManagerService extends SystemService
+                     return true;
+                 }
+             } else {
++                if (eventTime > mLastButtonActivityTime && (event & PowerManager.USER_ACTIVITY_EVENT_BUTTON) != 0) {
++                    mLastButtonActivityTime = eventTime;
++                    mDirty |= DIRTY_USER_ACTIVITY;
++                }
++
+                 if (eventTime > mLastUserActivityTime) {
+                     mLastUserActivityTime = eventTime;
+                     mDirty |= DIRTY_USER_ACTIVITY;
+@@ -1634,7 +1640,7 @@ public final class PowerManagerService extends SystemService
+                         }
+ 
+                         mKeyboardLight.setBrightness(mKeyboardVisible ? keyboardBrightness : 0);
+-                        if (mButtonTimeout != 0 && now > mLastUserActivityTime + mButtonTimeout) {
++                        if (mButtonTimeout != 0 && now > mLastButtonActivityTime + mButtonTimeout) {
+                              mButtonsLight.setBrightness(0);
+                         } else {
+                             mButtonsLight.setBrightness(buttonBrightness);
+-- 
+1.9.3 (Apple Git-50)
+

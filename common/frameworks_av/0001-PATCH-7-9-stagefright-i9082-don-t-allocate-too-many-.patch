@@ -1,0 +1,55 @@
+From d64be65dd110dc357a3998eb2721383824f7a8df Mon Sep 17 00:00:00 2001
+From: k2wl <kar2wlan@gmail.com>
+Date: Wed, 14 Jan 2015 21:05:44 +0530
+Subject: [PATCH] [PATCH 7/9] stagefright: i9082: don't allocate too many extra
+ buffers
+
+Too many extra buffers (for a total of 8) causes random
+video freezes and freezes on rotation
+
+commit by original author.
+Pawit Pornkitprasan <p.pawit@gmail.com>
+
+Change-Id: I2b5fdb2b66b198cc9de2d53e7a97ee73dacb05ef
+Signed-off-by: k2wl <kar2wlan@gmail.com>
+---
+ media/libstagefright/ACodec.cpp   | 6 +++++-
+ media/libstagefright/OMXCodec.cpp | 4 ++++
+ 2 files changed, 9 insertions(+), 1 deletion(-)
+
+diff --git a/media/libstagefright/ACodec.cpp b/media/libstagefright/ACodec.cpp
+index 0d38af2..8bc8406 100644
+--- a/media/libstagefright/ACodec.cpp
++++ b/media/libstagefright/ACodec.cpp
+@@ -781,7 +781,11 @@ status_t ACodec::configureOutputBuffersFromNativeWindow(
+     // This check was present in KitKat.
+     if (def.nBufferCountActual < def.nBufferCountMin + *minUndequeuedBuffers) {
+ #endif
+-    for (OMX_U32 extraBuffers = 2 + 1; /* condition inside loop */; extraBuffers--) {
++#ifdef CAPRI_HWC
+++    for (OMX_U32 extraBuffers = 1; /* condition inside loop */; extraBuffers--) {
++#else
++     for (OMX_U32 extraBuffers = 2 + 1; /* condition inside loop */; extraBuffers--) {
++#endif
+         OMX_U32 newBufferCount =
+             def.nBufferCountMin + *minUndequeuedBuffers + extraBuffers;
+         def.nBufferCountActual = newBufferCount;
+diff --git a/media/libstagefright/OMXCodec.cpp b/media/libstagefright/OMXCodec.cpp
+index 773c80b..ddc9429 100644
+--- a/media/libstagefright/OMXCodec.cpp
++++ b/media/libstagefright/OMXCodec.cpp
+@@ -2263,7 +2263,11 @@ status_t OMXCodec::allocateOutputBuffersFromNativeWindow() {
+     // This check was present in KitKat.
+     if (def.nBufferCountActual < def.nBufferCountMin + minUndequeuedBufs) {
+ #endif
++#ifdef CAPRI_HWC
++    for (OMX_U32 extraBuffers = 1; /* condition inside loop */; extraBuffers--) {
++#else
+     for (OMX_U32 extraBuffers = 2 + 1; /* condition inside loop */; extraBuffers--) {
++#endif
+         OMX_U32 newBufferCount =
+             def.nBufferCountMin + minUndequeuedBufs + extraBuffers;
+         def.nBufferCountActual = newBufferCount;
+-- 
+2.1.2
+
