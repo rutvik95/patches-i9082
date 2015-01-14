@@ -27,7 +27,7 @@ index 0d38af2..8bc8406 100644
  #endif
 -    for (OMX_U32 extraBuffers = 2 + 1; /* condition inside loop */; extraBuffers--) {
 +#ifdef CAPRI_HWC
-++    for (OMX_U32 extraBuffers = 1; /* condition inside loop */; extraBuffers--) {
++    for (OMX_U32 extraBuffers = 1; /* condition inside loop */; extraBuffers--) {
 +#else
 +     for (OMX_U32 extraBuffers = 2 + 1; /* condition inside loop */; extraBuffers--) {
 +#endif
